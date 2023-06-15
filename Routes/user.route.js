@@ -75,43 +75,44 @@ userRouter.post("/agnecyregister", passwordValidater, async (req, res) => {
 });
 
 userRouter.post("/login", async (req, res) => {
-  const { email, password } = req.body
-  const volunteer = await VolunteerModel.findOne({ email: email })
-  const agency = await AgencyModel.findOne({ email: email })
-  if (volunteer) {
+  const { email, password, role } = req.body;
+  if (role == "volunteer") {
+    const volunteer = await VolunteerModel.findOne({ email: email });
     try {
       bcrypt.compare(password, volunteer.password, (err, result) => {
         if (result) {
-          const token = jwt.sign({ project: "contributenow" }, "contribute")
-          res.status(200).json({ msg: "Volunteer logged in successfull", token })
+          const token = jwt.sign({ project: "contributenow" }, "contribute", {
+            expiresIn: "7d",
+          });
+          res
+            .status(200)
+            .json({ msg: "Volunteer logged in successfull", token });
         } else {
-          res.status(200).json({ msg: "Wrong credentials" })
+          res.status(200).json({ msg: "Wrong credentials" });
         }
-      })
+      });
     } catch (error) {
-      res.status(400).json({ msg: "Somthing went wrong" })
+      res.status(400).json({ msg: "Somthing went wrong" });
     }
-  } else if (agency) {
+  } else {
+    const agency = await AgencyModel.findOne({ email: email });
     try {
       bcrypt.compare(password, agency.password, (err, result) => {
         if (result) {
-          const token = jwt.sign({ project: "contributenow" }, "contribute")
-          res.status(200).json({ msg: "Agency logged in successfull", token })
+          const token = jwt.sign({ project: "contributenow" }, "contribute", {
+            expiresIn: "7d",
+          });
+          res.status(200).json({ msg: "Agency logged in successfull", token });
         } else {
-          res.status(200).json({ msg: "Wrong credentials" })
+          res.status(200).json({ msg: "Wrong credentials" });
         }
-      })
+      });
     } catch (error) {
-      res.status(400).json({ msg: "Somthing went wrong" })
+      res.status(400).json({ msg: "Somthing went wrong" });
     }
-  } else {
-    res.status(400).json({ msg: "Please create account as a volunteer or agency!!" })
   }
-})
+});
 module.exports = { userRouter };
-
-
-
 
 /*
 ***Example volunteer credentials***

@@ -1,8 +1,10 @@
 const express = require("express");
 const { eventModel } = require("../Model/event.model");
 const { interestedModel } = require("../Model/interestedVolunteer.model");
+const { auth } = require("../Middleware/auth.middleware");
 const agencyRouter = express.Router();
 
+agencyRouter.use(auth);
 // endpoint to create an event
 agencyRouter.post("/createevent", async (req, res) => {
   const { name, category } = req.body;
@@ -38,11 +40,20 @@ agencyRouter.get("/getallevents", async (req, res) => {
   res.json({ events });
 });
 
-agencyRouter.get("/interested/:id", async (req, res) => {
+
+agencyRouter.get("/getevent/:id", async (req, res) => {
+  // getting the event id from the req.params
   const { id } = req.params;
-  // getting all the volunteers interested in the event
-  const interestedVol = await interestedModel.find({ eventId: id });
-  res.json({ interestedVol });
+  try {
+    // getting the event from the database
+    const event = await eventModel.findById(id);
+    // getting the interested volunteers for the event
+    const interestedVolunteers = await interestedModel.find({ eventId: id });
+    res.json({ event, interestedVolunteers });
+  } catch (error) {
+    res.json({ message: error.message });
+  }
+
 });
 
 agencyRouter.patch("/updateevent/:id", async (req, res) => {
@@ -57,6 +68,7 @@ agencyRouter.patch("/updateevent/:id", async (req, res) => {
     const userIDfromDB = event.agencyId;
     // checking if the loggedin user is the owner of the event
     if (userIDfromDB === loggedinUSER) {
+      console.log(userIDfromDB, loggedinUSER);
       // if the loggedin user is the owner of the event, then update the event  with the req.body
       await eventModel.findByIdAndUpdate({ _id: id }, req.body);
       res.json({ message: "Event updated successfully" });
@@ -85,7 +97,7 @@ agencyRouter.delete("/deleteevent/:id", async (req, res) => {
       const events = await eventModel.findByIdAndDelete({ _id: id });
       // deleting all the interested volunteers for the event from the interestedVolunteer collection
       await interestedModel.deleteMany({ eventId: id });
-      res.json({ message: "Event updated successfully", events });
+      res.json({ message: "Event deleted successfully", events });
     } else {
       // if the loggedin user is not the owner of the event, then send a message
       res.json({ message: "You are not authorized to update this event" });

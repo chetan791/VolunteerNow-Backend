@@ -7,7 +7,7 @@ const auth = (req, res, next) => {
     // if the token is present, then verify the token
     const decoded = jwt.verify(token, "contribute");
     // adding the userId and userName to the req.body from the decoded token for further use
-    req.body.userIdId = decoded.userId;
+    req.body.userId = decoded.userId;
     req.body.userName = decoded.agencyname;
     next();
   } else {

@@ -38,6 +38,13 @@ agencyRouter.get("/getallevents", async (req, res) => {
   res.json({ events });
 });
 
+agencyRouter.get("/interested/:id", async (req, res) => {
+  const { id } = req.params;
+  // getting all the volunteers interested in the event
+  const interestedVol = await interestedModel.find({ eventId: id });
+  res.json({ interestedVol });
+});
+
 agencyRouter.patch("/updateevent/:id", async (req, res) => {
   // getting the loggedin user id from the req.body
   const loggedinUSER = req.body.userId;

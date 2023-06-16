@@ -40,6 +40,7 @@ agencyRouter.get("/getallevents", async (req, res) => {
   res.json({ events });
 });
 
+
 agencyRouter.get("/getevent/:id", async (req, res) => {
   // getting the event id from the req.params
   const { id } = req.params;
@@ -52,6 +53,7 @@ agencyRouter.get("/getevent/:id", async (req, res) => {
   } catch (error) {
     res.json({ message: error.message });
   }
+
 });
 
 agencyRouter.patch("/updateevent/:id", async (req, res) => {

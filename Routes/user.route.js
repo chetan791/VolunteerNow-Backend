@@ -87,7 +87,7 @@ userRouter.post("/login", async (req, res) => {
       bcrypt.compare(password, volunteer.password, (err, result) => {
         if (result) {
           //if the password matches, then create a token with the expire time of 7 days
-          const token = jwt.sign({ project: "contributenow" }, "contribute", {
+          const token = jwt.sign({ userId: volunteer._id }, "contribute", {
             expiresIn: "7d",
           });
           //sending the token to the frontend after successful login

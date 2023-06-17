@@ -9,6 +9,8 @@ const auth = (req, res, next) => {
     // adding the userId and userName to the req.body from the decoded token for further use
     req.body.userId = decoded.userId;
     req.body.userName = decoded.agencyname;
+    req.body.agencyId = decoded.userId;
+    req.body.agencyName = decoded.agencyname;
     next();
   } else {
     res.status(401).json({ message: "Please login first" });
